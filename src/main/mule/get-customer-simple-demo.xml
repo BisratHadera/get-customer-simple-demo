@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="130ee9a8-c91b-4d44-86cd-28579c000520" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="18266842-8580-4f43-8173-7a2be6d7d04e" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="hiyabtsion" database="employee_directory" />
+	</db:config>
+	<flow name="get-customer-simple-demoFlow" doc:id="12dfb3ce-7378-42d2-bc54-10e44c05cbd2" >
+		<http:listener doc:name="Listener" doc:id="3ac46c80-5391-4500-921d-0b992004dd9b" config-ref="HTTP_Listener_config" path="/getCustomer"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7b1eeeee-16fc-4c45-9d15-b2a73fc5948b" message="start log"/>
+		<db:select doc:name="Select" doc:id="bf19df69-1606-4308-b65d-3d8055e95dd3" config-ref="Database_Config">
+			<db:sql ><![CDATA[select id, gender, name from customer]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="f7e6f683-d68f-4afa-a3dd-73b6fdd0d1b5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
